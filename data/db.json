@@ -1,0 +1,458 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "email": "work.santhosh.fsd@gmail.com",
+      "passwordHash": "admin123",
+      "fullName": "Santhosh Kumar",
+      "role": "owner",
+      "createdAt": "2026-05-19T14:46:15.250Z"
+    }
+  ],
+  "customers": [
+    {
+      "id": "c1",
+      "name": "Arun Swaminathan",
+      "phone": "+91 98765 43210",
+      "address": "12, Gandhi Street, T. Nagar, Chennai - 600017",
+      "notes": "Reliable contractor, weekly earner",
+      "createdAt": "2026-05-09T14:46:15.254Z",
+      "updatedAt": "2026-05-09T14:46:15.254Z",
+      "isDeleted": false
+    },
+    {
+      "id": "c2",
+      "name": "Priya Chandran",
+      "phone": "+91 87654 32109",
+      "address": "Block-B, Royal Apartments, Adyar, Chennai - 600020",
+      "notes": "Salon owner, needs monthly/interest loans for expansion",
+      "createdAt": "2026-05-24T14:46:15.254Z",
+      "updatedAt": "2026-05-24T14:46:15.254Z",
+      "isDeleted": false
+    },
+    {
+      "id": "c3",
+      "name": "Vikram Malhotra",
+      "phone": "+91 76543 21098",
+      "address": "7-A, Greenways Lane, Mylapore, Chennai - 600004",
+      "notes": "Supermarket logistics manager, punctual but currently in overdue",
+      "createdAt": "2026-04-19T14:46:15.254Z",
+      "updatedAt": "2026-04-19T14:46:15.254Z",
+      "isDeleted": false
+    }
+  ],
+  "loans": [
+    {
+      "id": "l1",
+      "customerId": "c1",
+      "customerName": "Arun Swaminathan",
+      "type": "weekly",
+      "amount": 5000,
+      "interestRate": 20,
+      "durationWeeks": 12,
+      "weeklyPayment": 500,
+      "balance": 4500,
+      "status": "active",
+      "totalProfit": 500,
+      "createdAt": "2026-05-28T14:46:15.254Z",
+      "updatedAt": "2026-06-18T14:46:15.254Z",
+      "isDeleted": false,
+      "repaymentSchedule": [
+        {
+          "dueDate": "2026-06-04T14:46:15.254Z",
+          "amount": 500,
+          "paid": true,
+          "paidDate": "2026-06-05T14:46:15.254Z",
+          "paymentId": "pay_w_1"
+        },
+        {
+          "dueDate": "2026-06-11T14:46:15.254Z",
+          "amount": 500,
+          "paid": true,
+          "paidDate": "2026-06-12T14:46:15.254Z",
+          "paymentId": "pay_w_2"
+        },
+        {
+          "dueDate": "2026-06-18T14:46:15.254Z",
+          "amount": 500,
+          "paid": true,
+          "paidDate": "2026-06-19T14:46:15.254Z",
+          "paymentId": "pay_w_3"
+        },
+        {
+          "dueDate": "2026-06-25T14:46:15.254Z",
+          "amount": 500,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-07-02T14:46:15.254Z",
+          "amount": 500,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-07-09T14:46:15.254Z",
+          "amount": 500,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-07-16T14:46:15.254Z",
+          "amount": 500,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-07-23T14:46:15.254Z",
+          "amount": 500,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-07-30T14:46:15.254Z",
+          "amount": 500,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-08-06T14:46:15.254Z",
+          "amount": 500,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-08-13T14:46:15.254Z",
+          "amount": 500,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-08-20T14:46:15.254Z",
+          "amount": 500,
+          "paid": false
+        }
+      ]
+    },
+    {
+      "id": "l2",
+      "customerId": "c2",
+      "customerName": "Priya Chandran",
+      "type": "interest_only",
+      "amount": 15000,
+      "interestRate": 2,
+      "monthlyInterest": 300,
+      "balance": 15000,
+      "status": "active",
+      "totalProfit": 300,
+      "createdAt": "2026-05-04T14:46:15.254Z",
+      "updatedAt": "2026-06-18T14:46:15.254Z",
+      "isDeleted": false
+    },
+    {
+      "id": "l3",
+      "customerId": "c3",
+      "customerName": "Vikram Malhotra",
+      "type": "weekly",
+      "amount": 2500,
+      "interestRate": 20,
+      "durationWeeks": 10,
+      "weeklyPayment": 300,
+      "balance": 1800,
+      "status": "overdue",
+      "totalProfit": 200,
+      "createdAt": "2026-04-29T14:46:15.254Z",
+      "updatedAt": "2026-06-18T14:46:15.254Z",
+      "isDeleted": false,
+      "repaymentSchedule": [
+        {
+          "dueDate": "2026-05-06T14:46:15.254Z",
+          "amount": 300,
+          "paid": true,
+          "paidDate": "2026-05-06T14:46:15.254Z",
+          "paymentId": "pay_overdue_1"
+        },
+        {
+          "dueDate": "2026-05-13T14:46:15.254Z",
+          "amount": 300,
+          "paid": true,
+          "paidDate": "2026-05-13T14:46:15.254Z",
+          "paymentId": "pay_overdue_2"
+        },
+        {
+          "dueDate": "2026-05-20T14:46:15.254Z",
+          "amount": 300,
+          "paid": true,
+          "paidDate": "2026-05-20T14:46:15.254Z",
+          "paymentId": "pay_overdue_3"
+        },
+        {
+          "dueDate": "2026-05-27T14:46:15.254Z",
+          "amount": 300,
+          "paid": true,
+          "paidDate": "2026-05-27T14:46:15.254Z",
+          "paymentId": "pay_overdue_4"
+        },
+        {
+          "dueDate": "2026-06-03T14:46:15.254Z",
+          "amount": 300,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-06-10T14:46:15.254Z",
+          "amount": 300,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-06-17T14:46:15.254Z",
+          "amount": 300,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-06-24T14:46:15.254Z",
+          "amount": 300,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-07-01T14:46:15.254Z",
+          "amount": 300,
+          "paid": false
+        },
+        {
+          "dueDate": "2026-07-08T14:46:15.254Z",
+          "amount": 300,
+          "paid": false
+        }
+      ]
+    }
+  ],
+  "loanPayments": [
+    {
+      "id": "pay_w_1",
+      "loanId": "l1",
+      "customerName": "Arun Swaminathan",
+      "paymentDate": "2026-06-05T14:46:15.254Z",
+      "amount": 500,
+      "paymentMethod": "gpay",
+      "notes": "Installment #1",
+      "isDeleted": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pay_w_2",
+      "loanId": "l1",
+      "customerName": "Arun Swaminathan",
+      "paymentDate": "2026-06-12T14:46:15.254Z",
+      "amount": 500,
+      "paymentMethod": "cash",
+      "notes": "Installment #2",
+      "isDeleted": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pay_w_3",
+      "loanId": "l1",
+      "customerName": "Arun Swaminathan",
+      "paymentDate": "2026-06-19T14:46:15.254Z",
+      "amount": 500,
+      "paymentMethod": "gpay",
+      "notes": "Installment #3",
+      "isDeleted": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pay_i_1",
+      "loanId": "l2",
+      "customerName": "Priya Chandran",
+      "paymentDate": "2026-06-03T14:46:15.254Z",
+      "amount": 300,
+      "paymentMethod": "bank_transfer",
+      "notes": "Interest Payment Month 1",
+      "isDeleted": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pay_overdue_1",
+      "loanId": "l3",
+      "customerName": "Vikram Malhotra",
+      "paymentDate": "2026-05-06T14:46:15.254Z",
+      "amount": 300,
+      "paymentMethod": "phonepe",
+      "notes": "Installment #1",
+      "isDeleted": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pay_overdue_2",
+      "loanId": "l3",
+      "customerName": "Vikram Malhotra",
+      "paymentDate": "2026-05-13T14:46:15.254Z",
+      "amount": 300,
+      "paymentMethod": "phonepe",
+      "notes": "Installment #2",
+      "isDeleted": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pay_overdue_3",
+      "loanId": "l3",
+      "customerName": "Vikram Malhotra",
+      "paymentDate": "2026-05-20T14:46:15.254Z",
+      "amount": 300,
+      "paymentMethod": "cash",
+      "notes": "Installment #3",
+      "isDeleted": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pay_overdue_4",
+      "loanId": "l3",
+      "customerName": "Vikram Malhotra",
+      "paymentDate": "2026-05-27T14:46:15.254Z",
+      "amount": 300,
+      "paymentMethod": "cash",
+      "notes": "Installment #4",
+      "isDeleted": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    }
+  ],
+  "savings": [
+    {
+      "id": "s1",
+      "date": "2026-06-08",
+      "amount": 500,
+      "contributorName": "Santhosh Kumar",
+      "notes": "Daily collection accumulation deposit",
+      "isDeleted": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "s2",
+      "date": "2026-06-13",
+      "amount": 1000,
+      "contributorName": "Santhosh Kumar",
+      "notes": "Business savings portion",
+      "isDeleted": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "s3",
+      "date": "2026-06-17",
+      "amount": 400,
+      "contributorName": "Santhosh Kumar",
+      "notes": "Daily deposit from collections",
+      "isDeleted": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    }
+  ],
+  "profitRecords": [
+    {
+      "id": "pr1",
+      "date": "2026-06-04T14:46:15.254Z",
+      "amount": 83.33,
+      "type": "loan_interest",
+      "description": "Arun Swaminathan - Installment #1 Interest earned",
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pr2",
+      "date": "2026-06-11T14:46:15.254Z",
+      "amount": 83.33,
+      "type": "loan_interest",
+      "description": "Arun Swaminathan - Installment #2 Interest earned",
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pr3",
+      "date": "2026-06-18T14:46:15.254Z",
+      "amount": 83.34,
+      "type": "loan_interest",
+      "description": "Arun Swaminathan - Installment #3 Interest earned",
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pr4",
+      "date": "2026-06-03T14:46:15.254Z",
+      "amount": 300,
+      "type": "loan_interest",
+      "description": "Priya Chandran - Month 1 interest payment",
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pr5",
+      "date": "2026-05-06T14:46:15.254Z",
+      "amount": 50,
+      "type": "loan_interest",
+      "description": "Vikram Malhotra - Installment #1 Interest earned",
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pr6",
+      "date": "2026-05-13T14:46:15.254Z",
+      "amount": 50,
+      "type": "loan_interest",
+      "description": "Vikram Malhotra - Installment #2 Interest earned",
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pr7",
+      "date": "2026-05-20T14:46:15.254Z",
+      "amount": 50,
+      "type": "loan_interest",
+      "description": "Vikram Malhotra - Installment #3 Interest earned",
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    },
+    {
+      "id": "pr8",
+      "date": "2026-05-27T14:46:15.254Z",
+      "amount": 50,
+      "type": "loan_interest",
+      "description": "Vikram Malhotra - Installment #4 Interest earned",
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "n1",
+      "loanId": "l3",
+      "customerName": "Vikram Malhotra",
+      "title": "Loan Overdue Alert",
+      "message": "Vikram Malhotra has missed 3 consecutive weekly installments on loan #l3.",
+      "type": "overdue",
+      "read": false,
+      "createdAt": "2026-06-16T14:46:15.254Z"
+    },
+    {
+      "id": "n2",
+      "loanId": "l1",
+      "customerName": "Arun Swaminathan",
+      "title": "Upcoming Installment Due",
+      "message": "Arun Swaminathan has install #4 of ₹500 due in 2 days.",
+      "type": "upcoming",
+      "read": false,
+      "createdAt": "2026-06-18T14:46:15.254Z"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "aud_1781794221884_559",
+      "userEmail": "work.santhosh.fsd@gmail.com",
+      "action": "LOGIN_SUCCESS",
+      "entityType": "users",
+      "entityId": "u1",
+      "details": "Santhosh Kumar logged in successfully",
+      "createdAt": "2026-06-18T14:50:21.884Z"
+    },
+    {
+      "id": "aud1",
+      "userEmail": "work.santhosh.fsd@gmail.com",
+      "action": "CREATE_CUSTOMER",
+      "entityType": "customers",
+      "entityId": "c1",
+      "details": "Created customer Arun Swaminathan",
+      "createdAt": "2026-05-09T14:46:15.254Z"
+    },
+    {
+      "id": "aud2",
+      "userEmail": "work.santhosh.fsd@gmail.com",
+      "action": "CREATE_LOAN",
+      "entityType": "loans",
+      "entityId": "l1",
+      "details": "Disbursed Weekly Loan of ₹5000 to Arun Swaminathan",
+      "createdAt": "2026-05-28T14:46:15.254Z"
+    }
+  ],
+  "deletedRecords": []
+}

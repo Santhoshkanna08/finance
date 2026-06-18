@@ -1,0 +1,6 @@
+{
+  "name": "Finance & Loan Management Ledger",
+  "description": "A modern progressive full-stack microfinance ledger to track borrowing customers, disburse weekly schedules, list collections interest proceeds, and maintain audit compliance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

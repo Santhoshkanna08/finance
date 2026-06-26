@@ -8,7 +8,12 @@ type Bindings = {
   SUPABASE_ANON_KEY: string;
 };
 
-const app = new Hono<{ Bindings: Bindings }>();
+type Variables = {
+  db: EdgeDatabase;
+  user: any;
+};
+
+const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // Helper to authenticate user using Bearer token (email)
 async function getAuthenticatedUser(c: any, db: EdgeDatabase) {

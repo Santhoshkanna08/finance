@@ -243,10 +243,10 @@ export class EdgeDatabase {
     let balance = l.amount;
     let repaymentSchedule: Installment[] = [];
 
-    if (l.type === "weekly") {
+    if (l.type === "advance_interest") {
       const duration = l.durationWeeks || 12;
-      const weeklyReturn = l.weeklyPayment || 200;
-      balance = duration * weeklyReturn;
+      const weeklyReturn = l.weeklyPayment || Math.ceil(l.amount / duration);
+      balance = l.amount;
       const startDate = new Date();
       for (let i = 1; i <= duration; i++) {
         const dueDate = new Date(startDate.getTime() + i * 7 * 24 * 60 * 60 * 1000);
@@ -260,7 +260,7 @@ export class EdgeDatabase {
       interest_rate: l.interestRate, duration_weeks: l.durationWeeks,
       weekly_payment: l.weeklyPayment, monthly_interest: l.monthlyInterest,
       balance, status: "active", total_profit: 0, created_at: now, updated_at: now,
-      is_deleted: false, repayment_schedule: l.type === "weekly" ? repaymentSchedule : null
+      is_deleted: false, repayment_schedule: l.type === "advance_interest" ? repaymentSchedule : null
     }).select().single();
     if (error) throw error;
 
@@ -287,7 +287,7 @@ export class EdgeDatabase {
   async settleInterestOnlyPrincipal(loanId: string, amountPaid: number, authorEmail: string): Promise<Loan | null> {
     const { data: loan, error: errFetch } = await this.supabase.from("loans")
       .select("*, customers(name)").eq("id", loanId).maybeSingle();
-    if (errFetch || !loan || loan.type !== "interest_only" || loan.status === "closed") return null;
+    if (errFetch || !loan || loan.type !== "monthly_interest" || loan.status === "closed") return null;
 
     const newBalance = Math.max(0, Number(loan.balance) - amountPaid);
     const newStatus = newBalance === 0 ? "closed" : loan.status;
@@ -329,7 +329,7 @@ export class EdgeDatabase {
     let newTotalProfit = Number(loan.total_profit);
     let repaymentSchedule = loan.repayment_schedule;
 
-    if (loan.type === "weekly" && repaymentSchedule) {
+    if (loan.type === "advance_interest" && repaymentSchedule) {
       let remainingToApply = pay.amount;
       for (const inst of repaymentSchedule) {
         if (!inst.paid && remainingToApply >= inst.amount) {
@@ -340,30 +340,20 @@ export class EdgeDatabase {
         }
       }
       newBalance = Math.max(0, newBalance - pay.amount);
-      const totalRepayable = (loan.weekly_payment || 0) * (loan.duration_weeks || 0);
-      const profitRatio = totalRepayable > 0 ? (totalRepayable - loan.amount) / totalRepayable : 0;
-      const interestAmount = pay.amount * profitRatio;
-      newTotalProfit += interestAmount;
-
-      if (interestAmount > 0) {
-        await this.supabase.from("profit_records").insert({
-          id: `pr_${Date.now()}_${id}`, date: pay.paymentDate,
-          amount: Number(interestAmount.toFixed(2)), type: "loan_interest",
-          description: `${customerName} - Weekly Repay installment profit ratio share`,
-          created_at: new Date().toISOString()
-        });
-      }
+      // For advance interest loans, the interest is pre-collected so all payments reduce balance
+      newTotalProfit += 0; // profit already baked into advance interest
     } else {
+      // monthly_interest: each payment is pure interest income
       newTotalProfit += pay.amount;
       await this.supabase.from("profit_records").insert({
         id: `pr_${Date.now()}_${id}`, date: pay.paymentDate,
         amount: pay.amount, type: "loan_interest",
-        description: `${customerName} - Interest Payment (Interest-Only Loan)`,
+        description: `${customerName} - Monthly Interest Payment`,
         created_at: new Date().toISOString()
       });
     }
 
-    const newStatus = (loan.type === "weekly" && newBalance <= 0) ? "closed" : loan.status;
+    const newStatus = (loan.type === "advance_interest" && newBalance <= 0) ? "closed" : loan.status;
     await this.supabase.from("loans").update({
       balance: newBalance, total_profit: newTotalProfit,
       repayment_schedule: repaymentSchedule, status: newStatus,
@@ -637,20 +627,24 @@ export class EdgeDatabase {
 
     let totalDuesInWeekly = 0;
     let totalPaidInWeekly = 0;
-    activeLoans.filter(l => l.type === "weekly" && l.repaymentSchedule).forEach(l => {
+    activeLoans.filter(l => l.type === "advance_interest" && l.repaymentSchedule).forEach(l => {
       l.repaymentSchedule?.forEach(inst => {
         totalDuesInWeekly++;
         if (inst.paid) totalPaidInWeekly++;
       });
     });
     const recoveryRate = totalDuesInWeekly > 0 ? Math.round((totalPaidInWeekly / totalDuesInWeekly) * 100) : 100;
+    const closedLoansCount = activeLoans.filter(l => l.status === "closed").length;
+    const totalInterestEarned = totalCumulativeProfit;
+    const cashAvailable = Math.max(0, totalCapitalValue - totalMoneyLent + totalSavings);
 
     return {
       totalCapital: totalCapitalValue, totalMoneyLent,
-      activeLoansCount: nonClosedLoans.length, currentMonthProfit,
-      totalCumulativeProfit, totalSavings,
+      activeLoansCount: nonClosedLoans.filter(l => l.status === "active").length,
+      currentMonthProfit, totalCumulativeProfit, totalSavings,
       overdueLoansCount: overdueCount, todayCollectionsAmount: todayCollections,
-      monthlyTrends, recoveryRate
+      monthlyTrends, recoveryRate,
+      closedLoansCount, totalInterestEarned, cashAvailable
     };
   }
 
@@ -661,7 +655,7 @@ export class EdgeDatabase {
     const activeLoans = await this.getLoans();
     for (const loan of activeLoans) {
       if (loan.isDeleted || loan.status === "closed") continue;
-      if (loan.type === "weekly" && loan.repaymentSchedule) {
+      if (loan.type === "advance_interest" && loan.repaymentSchedule) {
         let isOverdue = false;
         loan.repaymentSchedule.forEach(inst => {
           const due = new Date(inst.dueDate);

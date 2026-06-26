@@ -160,12 +160,12 @@ export default function App() {
   };
 
   // Add customer handler
-  const handleAddCustomer = async (name: string, phone: string, address: string, notes: string): Promise<boolean> => {
+  const handleAddCustomer = async (name: string): Promise<boolean> => {
     try {
       const res = await fetch("/api/customers", {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ name, phone, address, notes })
+        body: JSON.stringify({ name })
       });
       if (!res.ok) {
         const d = await res.json();
@@ -180,12 +180,12 @@ export default function App() {
   };
 
   // Edit customer details
-  const handleEditCustomer = async (id: string, name: string, phone: string, address: string, notes: string): Promise<boolean> => {
+  const handleEditCustomer = async (id: string, name: string): Promise<boolean> => {
     try {
       const res = await fetch(`/api/customers/${id}`, {
         method: "PUT",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ name, phone, address, notes })
+        body: JSON.stringify({ name })
       });
       if (!res.ok) {
         const d = await res.json();
@@ -501,7 +501,6 @@ export default function App() {
                 onEditCustomer={handleEditCustomer}
                 onDeleteCustomer={handleDeleteCustomer}
                 onBulkDelete={handleBulkDeleteCustomers}
-                isDarkMode={isDarkMode}
                 userEmail={user.email}
               />
             )}

@@ -21,9 +21,6 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS customers (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
-  phone TEXT NOT NULL,
-  address TEXT DEFAULT '' NOT NULL,
-  notes TEXT DEFAULT '' NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   is_deleted BOOLEAN DEFAULT false NOT NULL

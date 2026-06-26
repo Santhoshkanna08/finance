@@ -47,7 +47,7 @@ export default function TrashView({
 
         <button
           onClick={onRefresh}
-          className={`px-4 py-2 text-xs font-semibold rounded-lg border cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
+          className={`px-4 py-2 text-xs font-semibold rounded-lg border cursor-pointer hover:bg-slate-50 transition-colors ${
             isDarkMode ? "border-slate-800 bg-slate-900 text-slate-300" : "border-slate-200 bg-white text-slate-700"
           }`}
         >
@@ -94,9 +94,9 @@ export default function TrashView({
                     </span>
 
                     <div>
-                      <h4 className="font-bold text-[12px] text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                      <h4 className="font-bold text-[12px] text-slate-900 flex items-center gap-2">
                         <span>{originalData.name || `Asset Outflow Ledger`}</span>
-                        <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-850 text-slate-400">
+                        <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-400">
                           {item.originalTable}
                         </span>
                       </h4>

@@ -41,7 +41,7 @@ export default function NotificationsView({
         {unresolved.length > 0 && (
           <button
             onClick={onDismissAll}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-1.5 border cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
+            className={`px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-1.5 border cursor-pointer hover:bg-slate-50 transition-colors ${
               isDarkMode ? "border-slate-800 bg-slate-900 text-slate-300" : "border-slate-200 bg-white text-slate-700"
             }`}
           >
@@ -92,12 +92,12 @@ export default function NotificationsView({
 
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="font-bold text-slate-950 dark:text-slate-100 text-[12px]">{n.title}</h4>
+                        <h4 className="font-bold text-slate-950 text-[12px]">{n.title}</h4>
                         {!n.read && (
                           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
                         )}
                       </div>
-                      <p className="text-slate-500 dark:text-slate-400 mt-1 leading-relaxed text-[11px]">{n.message}</p>
+                      <p className="text-slate-500 mt-1 leading-relaxed text-[11px]">{n.message}</p>
                       
                       <span className="text-[10px] font-mono text-slate-405 block mt-2 text-slate-400">
                         Logged on: {new Date(n.createdAt).toLocaleDateString()} {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -121,7 +121,7 @@ export default function NotificationsView({
                     {!n.read && (
                       <button
                         onClick={() => onMarkRead(n.id)}
-                        className={`p-1.5 rounded-lg border cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${
+                        className={`p-1.5 rounded-lg border cursor-pointer hover:bg-slate-100 transition-colors ${
                           isDarkMode ? "border-slate-850 text-slate-400" : "border-slate-200 text-slate-600"
                         }`}
                         title="Dismiss alert"

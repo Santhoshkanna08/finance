@@ -54,9 +54,17 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
 
   const cards = [
     {
-      title: "Total Capital Pool",
+      title: "Total Capital",
       value: formatCurrency(stats.totalCapital),
       description: "Baseline business credit line",
+      icon: Coins,
+      color: "text-blue-500 bg-blue-500/10",
+      tab: "savings"
+    },
+    {
+      title: "Cash Available",
+      value: formatCurrency(stats.cashAvailable),
+      description: "Liquid cash on hand",
       icon: Coins,
       color: "text-blue-500 bg-blue-500/10",
       tab: "savings"
@@ -70,15 +78,23 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
       tab: "loans"
     },
     {
-      title: "Monthly Profit (Jun)",
-      value: formatCurrency(stats.currentMonthProfit),
-      description: `Cumulative total: ${formatCurrency(stats.totalCumulativeProfit)}`,
+      title: "Total Interest Earned",
+      value: formatCurrency(stats.totalInterestEarned),
+      description: "Cumulative interest",
       icon: TrendingUp,
       color: "text-emerald-500 bg-emerald-500/10",
       tab: "logs"
     },
     {
-      title: "Total Savings Vault",
+      title: "Total Profit",
+      value: formatCurrency(stats.totalCumulativeProfit),
+      description: "Cumulative profit",
+      icon: TrendingUp,
+      color: "text-emerald-500 bg-emerald-500/10",
+      tab: "logs"
+    },
+    {
+      title: "Daily Savings",
       value: formatCurrency(stats.totalSavings),
       description: "Accumulated daily reserves",
       icon: PiggyBank,
@@ -86,17 +102,33 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
       tab: "savings"
     },
     {
+      title: "Active Loans",
+      value: `${stats.activeLoansCount} Loans`,
+      description: "Currently open",
+      icon: ReceiptIndianRupee,
+      color: "text-blue-500 bg-blue-500/10",
+      tab: "loans"
+    },
+    {
+      title: "Closed Loans",
+      value: `${stats.closedLoansCount} Loans`,
+      description: "Successfully repaid",
+      icon: ReceiptIndianRupee,
+      color: "text-slate-500 bg-slate-500/10",
+      tab: "loans"
+    },
+    {
       title: "Overdue Loans",
       value: `${stats.overdueLoansCount} Active`,
       description: "Dues late by 3+ days",
       icon: AlertTriangle,
-      color: stats.overdueLoansCount > 0 ? "text-rose-500 bg-rose-500/10 animate-pulse" : "text-slate-400 bg-slate-100 dark:bg-slate-800",
+      color: stats.overdueLoansCount > 0 ? "text-rose-500 bg-rose-500/10 animate-pulse" : "text-slate-400 bg-slate-100 ",
       tab: "notifications"
     },
     {
-      title: "Today's Collection",
+      title: "Today's Collections",
       value: formatCurrency(stats.todayCollectionsAmount),
-      description: "Received payments tracker",
+      description: "Received payments today",
       icon: CircleDollarSign,
       color: "text-sky-500 bg-sky-500/10",
       tab: "payments"
@@ -110,7 +142,7 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">Financial Overview</h1>
-          <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs md:text-sm text-slate-500 mt-1">
             Real-time analytics engine, collection trackers, and reserve statistics.
           </p>
         </div>
@@ -129,7 +161,7 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
       </div>
 
       {/* Bento Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {cards.map((card, i) => {
           const CardIcon = card.icon;
           return (
@@ -244,7 +276,7 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
                   cx="72"
                   cy="72"
                   r="62"
-                  className="stroke-slate-250 dark:stroke-slate-800"
+                  className="stroke-slate-250 "
                   strokeWidth="11"
                   fill="none"
                 />
@@ -262,7 +294,7 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
                 />
               </svg>
               <div className="absolute text-center">
-                <span className="text-3xl font-extrabold font-mono text-slate-900 dark:text-white">
+                <span className="text-3xl font-extrabold font-mono text-slate-900 ">
                   {stats.recoveryRate}%
                 </span>
                 <span className="text-[10px] text-slate-400 block font-mono uppercase tracking-widest mt-0.5">Fulfillment</span>
@@ -273,7 +305,7 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
             </p>
           </div>
 
-          <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800 space-y-2">
+          <div className="pt-4 border-t border-slate-200/50 space-y-2">
             <div className="flex justify-between items-center text-xs">
               <span className="text-slate-400">Collector Service State:</span>
               <span className="font-semibold text-emerald-500 font-mono">● High Speed</span>
@@ -294,7 +326,7 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <button
             onClick={() => onNavigate("loans")}
-            className="flex flex-col items-center p-4 rounded-xl border border-dashed transition-all hover:-translate-y-1 hover:border-emerald-500 hover:bg-emerald-500/5 border-slate-250 dark:border-slate-800 bg-transparent text-center cursor-pointer group"
+            className="flex flex-col items-center p-4 rounded-xl border border-dashed transition-all hover:-translate-y-1 hover:border-emerald-500 hover:bg-emerald-500/5 border-slate-250 bg-transparent text-center cursor-pointer group"
           >
             <PlusCircle className="w-6 h-6 text-emerald-500 mb-2 group-hover:scale-110 transition-transform" />
             <span className="text-xs font-semibold block">Create Loan</span>
@@ -303,7 +335,7 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
 
           <button
             onClick={() => onNavigate("customers")}
-            className="flex flex-col items-center p-4 rounded-xl border border-dashed transition-all hover:-translate-y-1 hover:border-blue-500 hover:bg-blue-500/5 border-slate-250 dark:border-slate-800 bg-transparent text-center cursor-pointer group"
+            className="flex flex-col items-center p-4 rounded-xl border border-dashed transition-all hover:-translate-y-1 hover:border-blue-500 hover:bg-blue-500/5 border-slate-250 bg-transparent text-center cursor-pointer group"
           >
             <UserPlus className="w-6 h-6 text-blue-500 mb-2 group-hover:scale-110 transition-transform" />
             <span className="text-xs font-semibold block">Add Customer</span>
@@ -312,7 +344,7 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
 
           <button
             onClick={() => onNavigate("payments")}
-            className="flex flex-col items-center p-4 rounded-xl border border-dashed transition-all hover:-translate-y-1 hover:border-violet-500 hover:bg-violet-500/5 border-slate-250 dark:border-slate-800 bg-transparent text-center cursor-pointer group"
+            className="flex flex-col items-center p-4 rounded-xl border border-dashed transition-all hover:-translate-y-1 hover:border-violet-500 hover:bg-violet-500/5 border-slate-250 bg-transparent text-center cursor-pointer group"
           >
             <CircleDollarSign className="w-6 h-6 text-violet-500 mb-2 group-hover:scale-110 transition-transform" />
             <span className="text-xs font-semibold block">Record Collection</span>
@@ -321,7 +353,7 @@ export default function DashboardView({ stats, onNavigate, isDarkMode, onRefresh
 
           <button
             onClick={() => onNavigate("savings")}
-            className="flex flex-col items-center p-4 rounded-xl border border-dashed transition-all hover:-translate-y-1 hover:border-amber-500 hover:bg-amber-500/5 border-slate-250 dark:border-slate-800 bg-transparent text-center cursor-pointer group"
+            className="flex flex-col items-center p-4 rounded-xl border border-dashed transition-all hover:-translate-y-1 hover:border-amber-500 hover:bg-amber-500/5 border-slate-250 bg-transparent text-center cursor-pointer group"
           >
             <PiggyBank className="w-6 h-6 text-amber-500 mb-2 group-hover:scale-110 transition-transform" />
             <span className="text-xs font-semibold block">Daily Savings</span>

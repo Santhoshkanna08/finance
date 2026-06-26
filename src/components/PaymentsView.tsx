@@ -130,7 +130,7 @@ export default function PaymentsView({
           <button
             onClick={handleExportCSV}
             disabled={filteredPayments.length === 0}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 border cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
+            className={`px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 border cursor-pointer hover:bg-slate-50 transition-colors ${
               isDarkMode ? "border-slate-800 bg-slate-900 text-slate-300" : "border-slate-200 bg-white text-slate-700"
             }`}
           >
@@ -219,7 +219,7 @@ export default function PaymentsView({
                 <th className="py-4 px-4 font-semibold text-right">Collected amount</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200/50 dark:divide-slate-850">
+            <tbody className="divide-y divide-slate-200/50 ">
               {filteredPayments.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="py-12 text-center text-xs text-slate-400 font-mono">
@@ -230,9 +230,9 @@ export default function PaymentsView({
                 filteredPayments.map((p) => {
                   const pDate = new Date(p.paymentDate);
                   return (
-                    <tr key={p.id} className="text-xs transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-950/10">
+                    <tr key={p.id} className="text-xs transition-colors hover:bg-slate-50/50 ">
                       <td className="py-4 px-5">
-                        <p className="font-bold text-[13px] text-slate-900 dark:text-white leading-snug">
+                        <p className="font-bold text-[13px] text-slate-900 leading-snug">
                           {p.customerName || "Customer details"}
                         </p>
                         <div className="flex items-center gap-1 text-slate-400 font-mono text-[10px] mt-1.5">

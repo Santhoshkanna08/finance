@@ -9,15 +9,12 @@ export interface User {
 export interface Customer {
   id: string;
   name: string;
-  phone: string;
-  address: string;
-  notes: string;
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
 }
 
-export type LoanType = "weekly" | "interest_only";
+export type LoanType = "advance_interest" | "monthly_interest";
 export type LoanStatus = "active" | "closed" | "overdue";
 
 export interface Installment {
@@ -100,13 +97,13 @@ export interface TrashRecord {
 
 export interface DashboardStats {
   totalCapital: number;
+  cashAvailable: number;
   totalMoneyLent: number;
+  totalInterestEarned: number;
+  totalProfit: number;
+  dailySavings: number;
   activeLoansCount: number;
-  currentMonthProfit: number;
-  totalCumulativeProfit: number;
-  totalSavings: number;
+  closedLoansCount: number;
   overdueLoansCount: number;
   todayCollectionsAmount: number;
-  monthlyTrends: { name: string; profit: number; collections: number }[];
-  recoveryRate: number;
 }

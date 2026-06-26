@@ -155,24 +155,24 @@ app.get("/api/customers", requireAuth, async (req, res) => {
 });
 
 app.post("/api/customers", requireAuth, async (req, res) => {
-  const { name, phone, address, notes } = req.body;
+  const { name } = req.body;
   const user = (req as any).user;
 
-  if (!name || !phone) {
-    res.status(400).json({ error: "Name and Phone number are required fields" });
+  if (!name) {
+    res.status(400).json({ error: "Name is a required field" });
     return;
   }
 
-  const newCust = await db.addCustomer({ name, phone, address: address || "", notes: notes || "" }, user.email);
+  const newCust = await db.addCustomer({ name }, user.email);
   res.json(newCust);
 });
 
 app.put("/api/customers/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
-  const { name, phone, address, notes } = req.body;
+  const { name } = req.body;
   const user = (req as any).user;
 
-  const updated = await db.updateCustomer(id, { name, phone, address, notes }, user.email);
+  const updated = await db.updateCustomer(id, { name }, user.email);
   if (updated) {
     res.json(updated);
   } else {

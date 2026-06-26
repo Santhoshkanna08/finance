@@ -100,7 +100,7 @@ export default function SavingsView({
           <button
             onClick={handleExportCSV}
             disabled={savings.length === 0}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 border cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
+            className={`px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 border cursor-pointer hover:bg-slate-50 transition-colors ${
               isDarkMode ? "border-slate-800 bg-slate-900 text-slate-300" : "border-slate-200 bg-white text-slate-700"
             }`}
           >
@@ -131,7 +131,7 @@ export default function SavingsView({
               ₹{totalSavings.toLocaleString("en-IN")}
             </h2>
           </div>
-          <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/80 text-[11px] text-slate-400 font-mono mt-4 flex items-center gap-1">
+          <div className="pt-4 border-t border-slate-200/50 text-[11px] text-slate-400 font-mono mt-4 flex items-center gap-1">
             <CheckCircle2 className="w-4.5 h-4.5 text-emerald-500" /> Fully Backed Capital Reserve
           </div>
         </div>
@@ -187,7 +187,7 @@ export default function SavingsView({
                 <th className="py-4 px-4 font-semibold text-right">Settled Amount</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200/50 dark:divide-slate-850">
+            <tbody className="divide-y divide-slate-200/50 ">
               {savings.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="py-12 text-center text-xs text-slate-400 font-mono">
@@ -196,9 +196,9 @@ export default function SavingsView({
                 </tr>
               ) : (
                 savings.map((s) => (
-                  <tr key={s.id} className="text-xs transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-955/10">
+                  <tr key={s.id} className="text-xs transition-colors hover:bg-slate-50/50 ">
                     <td className="py-4 px-5">
-                      <div className="font-bold text-[13px] text-slate-900 dark:text-white flex items-center gap-1.5 font-mono">
+                      <div className="font-bold text-[13px] text-slate-900 flex items-center gap-1.5 font-mono">
                         {s.date}
                       </div>
                     </td>
@@ -206,7 +206,7 @@ export default function SavingsView({
                       #{s.id}
                     </td>
                     <td className="py-4 px-4">
-                      <p className="font-semibold text-slate-700 dark:text-slate-350">{s.contributorName || "System Staff"}</p>
+                      <p className="font-semibold text-slate-700 ">{s.contributorName || "System Staff"}</p>
                       {s.notes && (
                         <p className="text-[10px] text-slate-400 mt-1 italic leading-relaxed">
                           "{s.notes}"

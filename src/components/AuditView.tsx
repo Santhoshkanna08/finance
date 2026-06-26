@@ -61,14 +61,14 @@ export default function AuditView({ logs, isDarkMode }: AuditViewProps) {
                   </span>
 
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 flex-wrap text-[11.5px]">
-                      <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-400">
+                    <p className="font-semibold text-slate-900 flex items-center gap-1.5 flex-wrap text-[11.5px]">
+                      <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-400">
                         {log.action}
                       </span>
                       <span className="font-mono text-[10px] text-slate-400">by {log.userEmail}</span>
                     </p>
                     
-                    <p className="text-slate-500 dark:text-slate-400 mt-1">{log.details}</p>
+                    <p className="text-slate-500 mt-1">{log.details}</p>
                     
                     <p className="text-[10px] text-slate-450 font-mono mt-1 text-slate-400 block">
                       ID Ref: #{log.id} • {logDate.toLocaleString()}

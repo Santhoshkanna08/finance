@@ -15,15 +15,12 @@ export interface User {
 export interface Customer {
   id: string;
   name: string;
-  phone: string;
-  address: string;
-  notes: string;
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
 }
 
-export type LoanType = "weekly" | "interest_only";
+export type LoanType = "advance_interest" | "monthly_interest";
 export type LoanStatus = "active" | "closed" | "overdue";
 
 export interface Installment {
@@ -587,7 +584,7 @@ export class LocalDatabaseManager implements IDatabase {
     this.data.loans.forEach(loan => {
       if (loan.isDeleted || loan.status === "closed") return;
 
-      if (loan.type === "weekly" && loan.repaymentSchedule) {
+      if (loan.type === "advance_interest" && loan.repaymentSchedule) {
         let isOverdue = false;
 
         loan.repaymentSchedule.forEach(inst => {
@@ -719,10 +716,10 @@ export class LocalDatabaseManager implements IDatabase {
     let balance = l.amount;
     let repaymentSchedule: Installment[] = [];
 
-    if (l.type === "weekly") {
+    if (l.type === "advance_interest") {
       const duration = l.durationWeeks || 12;
-      const weeklyReturn = l.weeklyPayment || 200;
-      balance = duration * weeklyReturn;
+      const weeklyReturn = l.weeklyPayment || Math.ceil(l.amount / duration);
+      balance = l.amount;
 
       const startDate = new Date();
       for (let i = 1; i <= duration; i++) {
@@ -745,7 +742,7 @@ export class LocalDatabaseManager implements IDatabase {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       isDeleted: false,
-      repaymentSchedule: l.type === "weekly" ? repaymentSchedule : undefined
+      repaymentSchedule: l.type === "advance_interest" ? repaymentSchedule : undefined
     };
 
     this.data.loans.push(newLoan);
@@ -768,7 +765,7 @@ export class LocalDatabaseManager implements IDatabase {
 
   public async settleInterestOnlyPrincipal(loanId: string, amountPaid: number, authorEmail: string) {
     const loan = this.data.loans.find(l => l.id === loanId);
-    if (!loan || loan.type !== "interest_only" || loan.status === "closed") return null;
+    if (!loan || loan.type !== "monthly_interest" || loan.status === "closed") return null;
 
     loan.balance = Math.max(0, loan.balance - amountPaid);
     if (loan.balance === 0) {
@@ -812,7 +809,7 @@ export class LocalDatabaseManager implements IDatabase {
 
     this.data.loanPayments.push(newPayment);
 
-    if (loan.type === "weekly" && loan.repaymentSchedule) {
+    if (loan.type === "advance_interest" && loan.repaymentSchedule) {
       let remainingToApply = pay.amount;
       for (const inst of loan.repaymentSchedule) {
         if (!inst.paid && remainingToApply >= inst.amount) {
@@ -1380,7 +1377,7 @@ export class SupabaseDatabaseManager implements IDatabase {
       .select("*, customers(name)")
       .eq("id", loanId)
       .maybeSingle();
-    if (errFetch || !loan || loan.type !== "interest_only" || loan.status === "closed") return null;
+    if (errFetch || !loan || loan.type !== "monthly_interest" || loan.status === "closed") return null;
 
     const newBalance = Math.max(0, Number(loan.balance) - amountPaid);
     const newStatus = newBalance === 0 ? "closed" : loan.status;
@@ -1453,7 +1450,7 @@ export class SupabaseDatabaseManager implements IDatabase {
     let newTotalProfit = Number(loan.total_profit);
     let repaymentSchedule = loan.repayment_schedule;
 
-    if (loan.type === "weekly" && repaymentSchedule) {
+    if (loan.type === "advance_interest" && repaymentSchedule) {
       let remainingToApply = pay.amount;
       for (const inst of repaymentSchedule) {
         if (!inst.paid && remainingToApply >= inst.amount) {
@@ -1494,7 +1491,7 @@ export class SupabaseDatabaseManager implements IDatabase {
       });
     }
 
-    const newStatus = (loan.type === "weekly" && newBalance <= 0) ? "closed" : loan.status;
+    const newStatus = (loan.type === "advance_interest" && newBalance <= 0) ? "closed" : loan.status;
 
     await this.supabase.from("loans").update({
       balance: newBalance,
@@ -1844,6 +1841,10 @@ export class SupabaseDatabaseManager implements IDatabase {
 
     const recoveryRate = totalDuesInWeekly > 0 ? Math.round((totalPaidInWeekly / totalDuesInWeekly) * 100) : 100;
 
+    const closedLoansCount = activeLoans.filter(l => l.status === "closed").length;
+    const totalInterestEarned = totalCumulativeProfit; // Assuming profit records are interest
+    const cashAvailable = totalCapitalValue - totalMoneyLent + totalSavings;
+    
     return {
       totalCapital: totalCapitalValue,
       totalMoneyLent,
@@ -1854,7 +1855,10 @@ export class SupabaseDatabaseManager implements IDatabase {
       overdueLoansCount: overdueCount,
       todayCollectionsAmount: todayCollections,
       monthlyTrends,
-      recoveryRate
+      recoveryRate,
+      closedLoansCount,
+      totalInterestEarned,
+      cashAvailable
     };
   }
 
@@ -1865,7 +1869,7 @@ export class SupabaseDatabaseManager implements IDatabase {
     for (const loan of activeLoans) {
       if (loan.isDeleted || loan.status === "closed") continue;
 
-      if (loan.type === "weekly" && loan.repaymentSchedule) {
+      if (loan.type === "advance_interest" && loan.repaymentSchedule) {
         let isOverdue = false;
         
         loan.repaymentSchedule.forEach(inst => {

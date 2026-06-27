@@ -88,9 +88,16 @@ app.get("/debug-env", (c) => {
   });
 });
 
-/* =========================================================================
-   1. Authentication API Endpoints
-   ========================================================================= */
+// Diagnostic: test POST body reading without Supabase
+app.post("/test-post", async (c) => {
+  try {
+    const text = await c.req.text();
+    return c.json({ received: text, ok: true });
+  } catch (err: any) {
+    return c.json({ error: err.message, ok: false }, 500);
+  }
+});
+
 
 app.post("/auth/register", async (c) => {
   try {

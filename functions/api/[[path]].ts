@@ -60,20 +60,24 @@ app.use("/*", async (c, next) => {
     return c.json({ error: "Missing Supabase configuration on Cloudflare Pages" }, 500);
   }
 
-  const db = new EdgeDatabase(supabaseUrl, supabaseKey);
-  c.set("db", db);
+  try {
+    const db = new EdgeDatabase(supabaseUrl, supabaseKey);
+    c.set("db", db);
 
-  if (isAuthRoute) {
+    if (isAuthRoute) {
+      await next();
+      return;
+    }
+
+    const user = await getAuthenticatedUser(c, db);
+    if (!user) {
+      return c.json({ error: "Unauthorized access: Please authenticate" }, 401);
+    }
+    c.set("user", user);
     await next();
-    return;
+  } catch (err: any) {
+    return c.json({ error: err.message || "Middleware error" }, 500);
   }
-
-  const user = await getAuthenticatedUser(c, db);
-  if (!user) {
-    return c.json({ error: "Unauthorized access: Please authenticate" }, 401);
-  }
-  c.set("user", user);
-  await next();
 });
 
 app.get("/debug-env", (c) => {
@@ -89,57 +93,71 @@ app.get("/debug-env", (c) => {
    ========================================================================= */
 
 app.post("/auth/register", async (c) => {
-  const db = c.get("db") as EdgeDatabase;
-  const { email, password, fullName } = await c.req.json();
-  if (!email || !password || !fullName) {
-    return c.json({ error: "Missing registration payloads" }, 400);
+  try {
+    const db = c.get("db") as EdgeDatabase;
+    const body = await c.req.json();
+    const { email, password, fullName } = body;
+    if (!email || !password || !fullName) {
+      return c.json({ error: "Missing registration payloads" }, 400);
+    }
+
+    const existing = await db.getUserByEmail(email);
+    if (existing) {
+      return c.json({ error: "An account with this email already exists" }, 400);
+    }
+
+    const newUser = {
+      id: `u_${Date.now()}`,
+      email: email.toLowerCase(),
+      passwordHash: password,
+      fullName,
+      role: "staff",
+      createdAt: new Date().toISOString()
+    };
+
+    await db.addUser(newUser);
+    await db.audit(newUser.email, "REGISTER_USER", "users", newUser.id, `Created a new account for ${fullName}`);
+
+    return c.json({
+      email: newUser.email,
+      fullName: newUser.fullName,
+      token: newUser.email,
+      role: newUser.role
+    });
+  } catch (err: any) {
+    return c.json({ error: err.message || "Registration failed" }, 500);
   }
-
-  const existing = await db.getUserByEmail(email);
-  if (existing) {
-    return c.json({ error: "An account with this email already exists" }, 400);
-  }
-
-  const newUser = {
-    id: `u_${Date.now()}`,
-    email: email.toLowerCase(),
-    passwordHash: password,
-    fullName,
-    role: "staff",
-    createdAt: new Date().toISOString()
-  };
-
-  await db.addUser(newUser);
-  await db.audit(newUser.email, "REGISTER_USER", "users", newUser.id, `Created a new account for ${fullName}`);
-
-  return c.json({
-    email: newUser.email,
-    fullName: newUser.fullName,
-    token: newUser.email,
-    role: newUser.role
-  });
 });
 
 app.post("/auth/login", async (c) => {
-  const db = c.get("db") as EdgeDatabase;
-  const { email, password } = await c.req.json();
-  if (!email || !password) {
-    return c.json({ error: "Please enter your email and password" }, 400);
+  try {
+    const db = c.get("db") as EdgeDatabase;
+    const body = await c.req.json();
+    const { email, password } = body;
+    if (!email || !password) {
+      return c.json({ error: "Please enter your email and password" }, 400);
+    }
+
+    const user = await db.getUserByEmail(email);
+    if (!user || user.passwordHash !== password) {
+      return c.json({ error: "Invalid email or password" }, 401);
+    }
+
+    try {
+      await db.audit(user.email, "LOGIN_SUCCESS", "users", user.id, `${user.fullName} logged in successfully`);
+    } catch (_) {
+      // audit failure is non-fatal
+    }
+
+    return c.json({
+      email: user.email,
+      fullName: user.fullName,
+      role: user.role,
+      token: user.email
+    });
+  } catch (err: any) {
+    return c.json({ error: err.message || "Login failed" }, 500);
   }
-
-  const user = await db.getUserByEmail(email);
-  if (!user || user.passwordHash !== password) {
-    return c.json({ error: "Invalid email or password" }, 401);
-  }
-
-  await db.audit(user.email, "LOGIN_SUCCESS", "users", user.id, `${user.fullName} logged in successfully`);
-
-  return c.json({
-    email: user.email,
-    fullName: user.fullName,
-    role: user.role,
-    token: user.email
-  });
 });
 
 app.put("/auth/profile", async (c) => {

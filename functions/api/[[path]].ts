@@ -39,12 +39,16 @@ async function getAuthenticatedUser(c: any, db: EdgeDatabase) {
 app.use("/*", async (c, next) => {
   const path = c.req.path;
 
-  if (path === "/debug-env") {
+  if (path === "/debug-env" || path === "/api/debug-env") {
     await next();
     return;
   }
 
-  const isAuthRoute = path === "/auth/register" || path === "/auth/login";
+  const isAuthRoute =
+    path === "/auth/register" ||
+    path === "/auth/login" ||
+    path === "/api/auth/register" ||
+    path === "/api/auth/login";
 
   const supabaseUrl = c.env.SUPABASE_URL;
   const supabaseKey = c.env.SUPABASE_SERVICE_ROLE_KEY || c.env.SUPABASE_ANON_KEY;

@@ -19,12 +19,12 @@ app.use((req, res, next) => {
 async function getAuthenticatedUser(req: express.Request) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return null;
-  const token = authHeader.replace("Bearer ", "");
+  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
   if (!token) return null;
   
   try {
     const users = await db.getUsers();
-    const user = users.find(u => u.email === token);
+    const user = users.find(u => u.email.toLowerCase() === token.toLowerCase());
     return user || null;
   } catch (e) {
     return null;

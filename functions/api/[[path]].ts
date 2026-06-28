@@ -58,9 +58,10 @@ app.get("/test-db", async (c) => {
 
 app.use("/*", async (c, next) => {
   const path = c.req.path;
+  const cleanPath = path.replace(/^\/api/, "");
 
   // Allow debug env without auth
-  if (path === "/debug-env" || path === "/api/debug-env") {
+  if (cleanPath === "/debug-env") {
     await next();
     return;
   }
@@ -71,13 +72,13 @@ app.use("/*", async (c, next) => {
     return c.json({ error: "Missing Supabase configuration on Cloudflare Pages" }, 500);
   }
 
-  // Initialize DB for all routes (including test-db)
+  // Initialize DB for all routes
   const db = new EdgeDatabase(supabaseUrl, supabaseKey);
   c.set("db", db);
 
-  // Determine routes that bypass authentication (auth endpoints and test-db)
-  const isAuthRoute = path.startsWith("/auth/") || path === "/test-db";
-  if (isAuthRoute) {
+  // Determine routes that bypass authentication (public auth endpoints and test utilities)
+  const publicRoutes = ["/auth/login", "/auth/register", "/test-db", "/test-post"];
+  if (publicRoutes.includes(cleanPath)) {
     await next();
     return;
   }

@@ -25,6 +25,8 @@ import {
 export default function App() {
   // Session session variables
   const [user, setUser] = React.useState<User | null>(null);
+  // Ref always holds the latest user so closures (setInterval, etc.) never go stale
+  const userRef = React.useRef<User | null>(null);
   const [appMounted, setAppMounted] = React.useState(false);
   
   // App views
@@ -46,13 +48,20 @@ export default function App() {
   // Page level error notifier
   const [globalError, setGlobalError] = React.useState("");
 
+  // Keep userRef in sync with user state so stale closures always see the latest value
+  React.useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
   // Durably load cached preference variables
   React.useEffect(() => {
     // Session load
     const savedUser = localStorage.getItem("capitalflow_session");
     if (savedUser) {
       try {
-        setUser(JSON.parse(savedUser));
+        const parsed = JSON.parse(savedUser);
+        userRef.current = parsed;
+        setUser(parsed);
       } catch (e) {
         localStorage.removeItem("capitalflow_session");
       }
@@ -69,22 +78,25 @@ export default function App() {
     setAppMounted(true);
   }, []);
 
-  // Fetch helpers
+  // Fetch helpers — reads from userRef so it is NEVER stale inside closures
   const getAuthHeaders = () => {
+    const currentUser = userRef.current;
     return {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${user?.token || ""}`
+      "Authorization": `Bearer ${currentUser?.token || ""}`
     };
   };
 
-  // Main synchronized data fetcher
+  // Main synchronized data fetcher — uses userRef so the setInterval copy is always fresh
   const synchronizeDatabaseTick = async () => {
-    if (!user) return;
+    const currentUser = userRef.current;
+    if (!currentUser) return;
     try {
       const headers = getAuthHeaders();
 
       // Fetch stats
       const statsRes = await fetch("/api/dashboard/stats", { headers });
+      if (statsRes.status === 401) { handleLogout(); return; }
       if (statsRes.ok) {
         const statsData = await statsRes.json();
         setStats(statsData);
@@ -124,12 +136,12 @@ export default function App() {
     }
   };
 
-  // Synchronize on login session update
+  // Synchronize on login session update — only one long-lived interval, stable via userRef
   React.useEffect(() => {
     if (user) {
       synchronizeDatabaseTick();
       // Periodically refresh dashboard parameters every 15 seconds
-      const ticker = setInterval(synchronizeDatabaseTick, 15000);
+      const ticker = setInterval(() => synchronizeDatabaseTick(), 15000);
       return () => clearInterval(ticker);
     }
   }, [user]);
@@ -138,6 +150,8 @@ export default function App() {
   const handleLoginSuccess = (email: string, fullName: string, role: string, token: string) => {
     const sessionObj = { email, fullName, role, token };
     localStorage.setItem("capitalflow_session", JSON.stringify(sessionObj));
+    // Update ref immediately so the very first synchronizeDatabaseTick after login has the token
+    userRef.current = sessionObj;
     setUser(sessionObj);
     setCurrentTab("dashboard");
     setGlobalError("");
@@ -145,6 +159,7 @@ export default function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("capitalflow_session");
+    userRef.current = null;
     setUser(null);
     setStats(null);
     setCustomers([]);

@@ -26,12 +26,15 @@ app.onError((err, c) => {
 async function getAuthenticatedUser(c: any, db: EdgeDatabase) {
   const authHeader = c.req.header("authorization");
   if (!authHeader) return null;
-  const token = authHeader.replace("Bearer ", "");
+
+  // Robust token extraction: handles any casing of "Bearer" and trims whitespace
+  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
   if (!token) return null;
 
   try {
     const users = await db.getUsers();
-    const user = users.find((u) => u.email === token);
+    // Case-insensitive comparison to handle any email casing edge cases
+    const user = users.find((u) => u.email.toLowerCase() === token.toLowerCase());
     return user || null;
   } catch (e) {
     return null;

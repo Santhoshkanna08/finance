@@ -8,8 +8,8 @@ interface LoginViewProps {
 
 export default function LoginView({ onLoginSuccess, isDarkMode }: LoginViewProps) {
   const [isRegister, setIsRegister] = React.useState(false);
-  const [email, setEmail] = React.useState("work.santhosh.fsd@gmail.com");
-  const [password, setPassword] = React.useState("admin123");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [fullName, setFullName] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
   

@@ -45,6 +45,7 @@ export default function PaymentsView({
   const [amount, setAmount] = React.useState("");
   const [paymentMethod, setPaymentMethod] = React.useState("gpay");
   const [notes, setNotes] = React.useState("");
+  const [paymentDate, setPaymentDate] = React.useState("");
 
   // Filter payment metrics
   const filteredPayments = payments.filter((pay) => {
@@ -71,10 +72,15 @@ export default function PaymentsView({
       return;
     }
 
+    // Use the selected date; fall back to current moment if somehow blank
+    const resolvedDate = paymentDate
+      ? new Date(paymentDate + "T00:00:00").toISOString()
+      : new Date().toISOString();
+
     const ok = await onRecordPayment({
       loanId: selectedLoanId,
       amount: Number(amount),
-      paymentDate: new Date().toISOString(),
+      paymentDate: resolvedDate,
       paymentMethod,
       notes: notes || "Manual payment intake"
     });
@@ -84,6 +90,7 @@ export default function PaymentsView({
       setSelectedLoanId("");
       setAmount("");
       setNotes("");
+      setPaymentDate("");
     }
   };
 
@@ -139,7 +146,10 @@ export default function PaymentsView({
           </button>
 
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setPaymentDate(new Date().toISOString().substring(0, 10));
+              setShowModal(true);
+            }}
             className="px-4 py-2 text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg flex items-center gap-1.5 cursor-pointer shadow transition-transform active:scale-95"
           >
             <CircleDollarSign className="w-4 h-4" />
@@ -315,7 +325,7 @@ export default function PaymentsView({
                 </select>
               </div>
 
-              {/* Amount */}
+              {/* Collected Amount */}
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-400 block font-mono">Collected Amount (₹)</label>
                 <input
@@ -328,6 +338,24 @@ export default function PaymentsView({
                     isDarkMode ? "bg-slate-950 border-slate-850" : "bg-slate-50 border-slate-250"
                   }`}
                 />
+              </div>
+
+              {/* Payment Date — editable so payments on other days can be logged correctly */}
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-400 block font-mono">Payment Date</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                  <input
+                    type="date"
+                    required
+                    value={paymentDate}
+                    onChange={(e) => setPaymentDate(e.target.value)}
+                    className={`w-full pl-9 pr-3 py-2 rounded-lg border text-xs outline-none focus:border-emerald-500 ${
+                      isDarkMode ? "bg-slate-950 border-slate-850 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
+                    }`}
+                  />
+                </div>
+                <p className="text-[10px] text-slate-500 font-mono">Defaults to today — change if payment was received on a different day</p>
               </div>
 
               {/* Method */}

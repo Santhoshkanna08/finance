@@ -79,6 +79,7 @@ export default function LoansView({
   const [payAmount, setPayAmount] = React.useState("");
   const [payMethod, setPayMethod] = React.useState("gpay");
   const [payNotes, setPayNotes] = React.useState("");
+  const [payDate, setPayDate] = React.useState("");
 
   // Principal Settle triggers
   const [showSettleModal, setShowSettleModal] = React.useState(false);
@@ -142,10 +143,15 @@ export default function LoansView({
     e.preventDefault();
     if (!selectedLoan || !payAmount) return;
 
+    // Use selected date if provided, fall back to current timestamp
+    const resolvedDate = payDate
+      ? new Date(payDate + "T00:00:00").toISOString()
+      : new Date().toISOString();
+
     const ok = await onRecordPayment({
       loanId: selectedLoan.id,
       amount: Number(payAmount),
-      paymentDate: new Date().toISOString(),
+      paymentDate: resolvedDate,
       paymentMethod: payMethod,
       notes: payNotes || "Collected installment"
     });
@@ -154,6 +160,7 @@ export default function LoansView({
       setShowPayModal(false);
       setPayAmount("");
       setPayNotes("");
+      setPayDate("");
       
       // Update selectedLoan in drawer to reflect newest schedule logs
       const updated = loans.find(l => l.id === selectedLoan.id);
@@ -195,6 +202,8 @@ export default function LoansView({
       }
     }
     setPayNotes(selectedLoan?.type === "weekly" ? "Collected weekly payment" : "Monthly Interest Received");
+    // Default payment date to today
+    setPayDate(new Date().toISOString().substring(0, 10));
     setShowPayModal(true);
   };
 
@@ -852,6 +861,24 @@ export default function LoansView({
                     isDarkMode ? "bg-slate-950 border-slate-850/80" : "bg-slate-50 border-slate-250"
                   }`}
                 />
+              </div>
+
+              {/* Payment Date — allows recording payments on any day */}
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-400 block font-mono">Payment Date</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                  <input
+                    type="date"
+                    required
+                    value={payDate}
+                    onChange={(e) => setPayDate(e.target.value)}
+                    className={`w-full pl-9 pr-3 py-2 rounded-lg border text-xs outline-none focus:border-emerald-500 ${
+                      isDarkMode ? "bg-slate-950 border-slate-850/80 text-white" : "bg-slate-50 border-slate-250 text-slate-900"
+                    }`}
+                  />
+                </div>
+                <p className="text-[10px] text-slate-500 font-mono">Change if payment was received on a different date</p>
               </div>
 
               <div className="space-y-1">
